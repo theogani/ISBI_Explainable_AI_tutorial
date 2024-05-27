@@ -1,4 +1,4 @@
-General Guidelines for Reproducing Explainability Analysis with Nearest Neighbor Contrastive Explainer
+# General Guidelines for Explainability Analysis with Nearest-Neighbor Contrastive Explainer
 
 Welcome to the notebook for explainability analysis using the Nearest Neighbor Contrastive Explainer (NNCE). The task focuses on differentiating between clinically significant and insignificant prostate cancer. This guide will help you understand the clinical case, set up your environment, download and prepare the data, and reproduce the results documented in the notebook.
 
