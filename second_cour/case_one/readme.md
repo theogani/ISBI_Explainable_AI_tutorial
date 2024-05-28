@@ -1,33 +1,75 @@
 # General Guidelines for Explainability Analysis with Nearest-Neighbor Contrastive Explainer
 
-Welcome to the notebook for explainability analysis using the Nearest Neighbor Contrastive Explainer (NNCE). The task focuses on differentiating between clinically significant and insignificant prostate cancer. This guide will help you understand the clinical case, set up your environment, download and prepare the data, and reproduce the results documented in the notebook.
+Welcome to the notebook for explainability analysis using the Nearest Neighbor Contrastive Explainer (NNCE). The task focuses on differentiating between clinically significant (csPCa) and insignificant prostate cancer (ciPCa). This guide will help you understand the clinical case, set up your environment, download and prepare the data, and reproduce the results documented in the notebook.
 
-1. Clinical Case Overview
+## Case overview
 
-Objective:
-To differentiate between clinically significant and insignificant prostate cancer using radiomics data and interpret the model's predictions using explainability techniques.
+### Objective
+Use explanability method to interpret and improve a model's predictions for classification of clinically insignificant and significant prostate cancer based on radiomics features.
 
-Dataset:
-The dataset consists of radiomics features extracted from prostate cancer patients. The labels indicate whether the cancer is clinically significant (1) or insignificant (0).
+### Data
+The original dataset is from Prostate Imaging: Cancer AI challenge, specifically the Public Training and development dataset (PICAI). You can find more information [here](https://pi-cai.grand-challenge.org/)
 
-Model:
-We use a pre-trained Support Vector Machine (SVM) model to classify the data. The model predicts whether a given set of radiomics features corresponds to clinically significant or insignificant prostate cancer.
+_Dataset characteristics:_
+- MRI modality: T2-weighted (T2W) and diffusion weighted (DWI) images (axial view)
+- AI-based whole prostate gland segmentation files
+- Clinical data including age, prostate volume, Prostate Specific Antigen (PSA), and PSA density.
 
-2. Downloading Data and Code
+### Methods
+The data used for training consists of radiomics features extracted from the MRI images with the [PyRadiomics](https://github.com/AIM-Harvard/pyradiomics) library. The labels indicate whether the cancer is clinically significant (1) or insignificant (0).
 
-Repository:
+#### Preprocessing and feature selection:
+- **Harmonization**: `COMBAT` method was applied for feature harmonization, making the them vendor agnostic.
+- **Outlier Removal**: `PCA`-based methods were employed for outlier removal.
+- **Feature Selection**:
+    - `T-test`: Features that are not statistically significant between the groups were removed using a t-test.
+    - `Correlation Analysis`: Highly collinear features (correlation coefficient > 95%) were removed to avoid multicollinearity issues.
+    - `Repeated Elastic Net Technique (RENT)`: RENT was used for feature selection to identify the most relevant features for classification.
+
+#### Model training
+A `Support Vector Machine` (SVM) with linear kernel (cost =4) was trained to classify the data. A training-testing data split was repeated 5 times, where one third of the data was used for testing and the rest for training.
+
+__Performance metrics__
+
+
+|            | Precision | Recall | F1-Score | Support |
+|------------|-----------|--------|----------|---------|
+| **0**      | 0.88      | 0.82   | 0.85     | 327     |
+| **1**      | 0.62      | 0.73   | 0.67     | 134     |
+|            |           |        |          |         |
+| **Accuracy**       |           |        |    0.79  | 461     |
+| **Macro Avg**      | 0.75      | 0.77   | 0.76     | 461     |
+| **Weighted Avg**   | 0.81      | 0.79   | 0.80     | 461     |
+
+
+
+__Confusion Matrix__
+|              | Predicted 0 | Predicted 1 |
+|--------------|--------------|-------------|
+| **Actual 0** | 267          | 60          |
+| **Actual 1** | 36           | 98          |
+
+
+
+
+
+> You can found more information regarding this work [here]()
+
+## Downloading Data and Code
+
+__Repository__:
 The code and data are available in the GitHub repository. Clone the repository to your local machine or directly download the files needed.
 
-Data:
+__Data__:
 Download the radiomics data and pre-trained model files and upload them to your Google Colab environment. The necessary files are:
-- pc_model.joblib
-- RENT_selected.txt
-- isbi_data.csv
+- `pc_model.joblib`
+- `RENT_selected.txt`
+- `isbi_data.csv`
 
-- You should upload these files as a single directory in the main folder of Google Drive
-- For the EDA part you need first to unzip the "images.zip" file
+Upload these files as a single folder (i.e. `case_one`) in the main folder of Google Drive
+For the EDA part you also need to unzip first the `images.zip` file and include the folder `images` in the folder you will upload.
 
-4. Running the Notebook in Google Colab
+### Running the Notebook in Google Colab
 
 Steps to Run:
 1. Open the notebook
@@ -37,7 +79,7 @@ Steps to Run:
     - The data is already normalized and clean.
 4. Initialize and Train NNCE
 5. Select a Sample:
-    - Define a function to select a sample either randomly or by class label (clinically significant or insignificant).
+    - Define a function to select a sample either randomly or by class label (clinically significant was selected as an example for the notebook).
     - Perform explainability analysis on the selected sample.
 
 6. Explainability Analysis:
@@ -52,6 +94,4 @@ Explainability Analysis Outputs:
 - Delta Visualization: Heatmaps showing the differences in features between the selected sample and its nearest neighbors.
 
 - Global Feature Importance: Analysis of the most influential features across multiple samples.
-- Misclassification Analysis: Understanding why certain instances were misclassified.
-- Feature Sensitivity: Assessing how changes in specific features affect model predictions.
-- Embedding Visualization: Using dimensionality reduction techniques to visualize the embedding space learned by NNCE.
+
